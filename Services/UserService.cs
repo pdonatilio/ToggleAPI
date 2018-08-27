@@ -14,6 +14,7 @@ namespace ToggleAPI.Services
         IEnumerable<UserDto> Get();
         UserDto Get(int id);
         void Post(UserDto userDto);
+        UserDto Post(string username, string password);
         void Put(int id, UserDto userDto);
         void Delete(int id);
     }   
@@ -36,6 +37,7 @@ namespace ToggleAPI.Services
         public IEnumerable<UserDto> Get() => _mapper.Map<IList<UserDto>>(_context.Users);
         public UserDto Get(int id) => _mapper.Map<UserDto>(_context.Users.Find(id));
 
+        //Creating a New User
         public void Post(UserDto userDto)
         {
             //Only Create a new user if they is not null, if they not already taken, and password is not null
@@ -58,6 +60,30 @@ namespace ToggleAPI.Services
             }                    
             else
                 throw new Exception();
+        }
+
+        //User Authentication
+        public UserDto Post(string username, string password)
+        {
+            UserDto userDto = new UserDto();           
+
+            if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
+            {
+                // getting the user by name
+                User user = _context.Users.SingleOrDefault(u => u.Username == username);
+                
+                // checking password
+                if (VerifyPassword( password, user.PasswordSalt, user.PasswordHash))
+                {
+                    userDto =  _mapper.Map<UserDto>(user);
+
+                    // Getting the token
+                    userDto.token = "123";
+                }
+                else
+                    throw new Exception();
+            }
+            return userDto;
         }
 
         public void Put(int id, UserDto userDto)
@@ -115,6 +141,25 @@ namespace ToggleAPI.Services
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        private static bool VerifyPassword(string password,
+                                            byte[] storedSalt,
+                                            byte[] storedHash)
+        {          
+            if (password != null && storedSalt.Length == 128 && storedHash.Length == 64)
+            {
+                using (var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt))
+                {
+                    var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                    for (int i = 0; i < computedHash.Length; i++)
+                    {
+                        if (computedHash[i] != storedHash[i]) return false;
+                    }
+                }
+                return true;
+            } else
+                throw new Exception();
         }
     }
 }

@@ -67,6 +67,21 @@ namespace ToggleAPI.Controllers
             }
         }
 
+        // POST api/User/auth
+        // User authentication passing name and password by json file
+        [HttpPost("{auth}")]
+        public IActionResult Authenticate([FromBody]UserDto userDto)
+        {
+            try
+            {
+                //_userService.Post(userDto);
+                return Ok(_userService.Post(userDto.Username, userDto.Password));
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
         // PUT api/User/{id}
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]UserDto userDto)
