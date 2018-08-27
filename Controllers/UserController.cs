@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ToggleAPI.Services;
 using ToggleAPI.Models;
 using ToggleAPI.Dtos;
 
 namespace ToggleAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -53,6 +55,7 @@ namespace ToggleAPI.Controllers
         }
 
         // POST api/User
+        [AllowAnonymous]
         [HttpPost]
         public IActionResult Post([FromBody]UserDto userDto)
         {
@@ -69,12 +72,12 @@ namespace ToggleAPI.Controllers
 
         // POST api/User/auth
         // User authentication passing name and password by json file
+        [AllowAnonymous]
         [HttpPost("{auth}")]
         public IActionResult Authenticate([FromBody]UserDto userDto)
         {
             try
             {
-                //_userService.Post(userDto);
                 return Ok(_userService.Post(userDto.Username, userDto.Password));
             }
             catch (System.Exception ex)

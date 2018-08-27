@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using AutoMapper;
 using ToggleAPI.Models;
@@ -27,7 +31,7 @@ namespace ToggleAPI
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
-            //MySql connection
+            // MySql connection
             services.AddDbContextPool<ToogleAPIContext>(
                 options => options.UseMySql(Configuration.GetConnectionString("MysqlConnection"),
                     mySqlOptionsAction =>
@@ -38,7 +42,7 @@ namespace ToggleAPI
                 )
             );
 
-            //Redis connection
+            // Redis connection
             services.AddDistributedRedisCache(
                 options =>
                 {
@@ -52,6 +56,44 @@ namespace ToggleAPI
 
             // Configure the AutoMapper
             services.AddAutoMapper();
+
+            // Configure jwt authentication
+            var key = Encoding.ASCII.GetBytes(Configuration.
+                                                GetSection("JWTSettings").
+                                                GetValue<String>("Secret"));
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                        var userId = int.Parse(context.Principal.Identity.Name);
+                        var user = userService.Get(userId);
+                        if (user == null)
+                        {
+                            // return unauthorized if user no longer exists
+                            context.Fail("Unauthorized");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +107,15 @@ namespace ToggleAPI
             {
                 app.UseHsts();
             }
+
+           // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
+            
+            app.UseAuthentication();
 
             app.UseHttpsRedirection();
             app.UseMvc();
