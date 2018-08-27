@@ -4,7 +4,14 @@ using ToggleAPI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+
 
 
 namespace ToggleAPI.Services
@@ -14,9 +21,9 @@ namespace ToggleAPI.Services
         IEnumerable<UserDto> Get();
         UserDto Get(int id);
         void Post(UserDto userDto);
-        UserDto Post(string username, string password);
         void Put(int id, UserDto userDto);
         void Delete(int id);
+        UserDto Auth(string username, string password);
     }   
 
     public class UserService : IUserService
@@ -24,13 +31,16 @@ namespace ToggleAPI.Services
         private readonly IMapper _mapper;
 
         private ToogleAPIContext _context;
+        private readonly AppSettings _appSettings;
        
         public UserService(
             ToogleAPIContext context,
-            IMapper mapper)
+            IMapper mapper,
+            IOptions<AppSettings> appSettings)
         {
             _context = context;
             _mapper = mapper;
+            _appSettings = appSettings.Value;
         }
 
         // Get all and get by ID using expression Body
@@ -60,30 +70,6 @@ namespace ToggleAPI.Services
             }                    
             else
                 throw new Exception();
-        }
-
-        //User Authentication
-        public UserDto Post(string username, string password)
-        {
-            UserDto userDto = new UserDto();           
-
-            if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
-            {
-                // getting the user by name
-                User user = _context.Users.SingleOrDefault(u => u.Username == username);
-                
-                // checking password
-                if (VerifyPassword( password, user.PasswordSalt, user.PasswordHash))
-                {
-                    userDto =  _mapper.Map<UserDto>(user);
-
-                    // Getting the token
-                    userDto.token = "123";
-                }
-                else
-                    throw new Exception();
-            }
-            return userDto;
         }
 
         public void Put(int id, UserDto userDto)
@@ -134,6 +120,30 @@ namespace ToggleAPI.Services
         }
 
         // Thinking about migrate these itens below to helper's folder
+        //User Authentication
+        public UserDto Auth(string username, string password)
+        {
+            UserDto userDto = new UserDto();           
+
+            if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password))
+            {
+                // getting the user by name
+                User user = _context.Users.SingleOrDefault(u => u.Username == username);
+                
+                // checking password
+                if (VerifyPassword(password, user.PasswordSalt, user.PasswordHash))
+                {
+                    userDto =  _mapper.Map<UserDto>(user);
+                    
+                    // Getting the token
+                    userDto.token = getToken(userDto.Id.ToString());
+                }
+                else
+                    throw new Exception();
+            }
+            return userDto;
+        }
+
         private static void CreatePasswordHash(string password,  out byte[] passwordSalt, out byte[] passwordHash)
         {
             using (var hmac = new System.Security.Cryptography.HMACSHA512())
@@ -160,6 +170,25 @@ namespace ToggleAPI.Services
                 return true;
             } else
                 throw new Exception();
+        }
+
+        private string getToken(string userId)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[] 
+                {
+                    new Claim(ClaimTypes.Name, userId)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            var tokenString = tokenHandler.WriteToken(token);
+
+            return tokenString;
         }
     }
 }

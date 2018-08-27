@@ -14,6 +14,7 @@ using AutoMapper;
 using ToggleAPI.Models;
 using ToggleAPI.Services;
 using ToggleAPI.Dtos;
+using ToggleAPI.Helpers;
 
 namespace ToggleAPI
 {
@@ -58,9 +59,11 @@ namespace ToggleAPI
             services.AddAutoMapper();
 
             // Configure jwt authentication
-            var key = Encoding.ASCII.GetBytes(Configuration.
-                                                GetSection("JWTSettings").
-                                                GetValue<String>("Secret"));
+            var appSettingsSection = Configuration.GetSection("JWTSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
 
             services.AddAuthentication(x =>
             {
@@ -107,14 +110,7 @@ namespace ToggleAPI
             {
                 app.UseHsts();
             }
-
-           // global cors policy
-            app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials());
-            
+           
             app.UseAuthentication();
 
             app.UseHttpsRedirection();

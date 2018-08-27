@@ -78,7 +78,7 @@ namespace ToggleAPI.Controllers
         {
             try
             {
-                return Ok(_userService.Post(userDto.Username, userDto.Password));
+                return Ok(_userService.Auth(userDto.Username, userDto.Password));
             }
             catch (System.Exception ex)
             {
