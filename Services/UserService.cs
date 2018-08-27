@@ -40,7 +40,7 @@ namespace ToggleAPI.Services
         {
             //Only Create a new user if they is not null, if they not already taken, and password is not null
             if (!string.IsNullOrWhiteSpace(userDto.Username) && 
-                _context.Users.Any(x => x.Username == userDto.Username) &&
+                !_context.Users.Any(x => x.Username == userDto.Username) &&
                 !string.IsNullOrWhiteSpace(userDto.Password))
             {
                 // including the DTO itens to user model
@@ -70,7 +70,7 @@ namespace ToggleAPI.Services
 
                 //Only Upddate the username if they is not null and if they not already taken
                 if (!string.IsNullOrWhiteSpace(userDto.Username) && 
-                    _context.Users.Any(x => x.Username == userDto.Username))
+                    !_context.Users.Any(x => x.Username == userDto.Username))
                     user.Username = userDto.Username;
                 else
                     throw new Exception();
