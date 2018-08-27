@@ -6,7 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using AutoMapper;
 using ToggleAPI.Models;
+using ToggleAPI.Services;
+using ToggleAPI.Dtos;
 
 namespace ToggleAPI
 {
@@ -43,6 +46,12 @@ namespace ToggleAPI
                     options.InstanceName = "redis_test";
                 }
             );
+
+            // Configure DI for application services
+            services.AddScoped<IUserService, UserService>();
+
+            // Configure the AutoMapper
+            services.AddAutoMapper();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
