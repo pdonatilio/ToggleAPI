@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +19,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Caching.Redis" Version="2.1.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.1.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="2.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUi" Version="2.5.0" />
   </ItemGroup>
 
 </Project>
