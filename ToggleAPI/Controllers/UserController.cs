@@ -25,6 +25,12 @@ namespace ToggleAPI.Controllers
         /// <summary>
         /// Get all users.
         /// </summary>
+        /// <remarks>
+        /// Sample request:
+        ///
+        ///     GET api/User/{id}
+        ///
+        /// </remarks>
         /// <returns>A list with all users</returns>
         /// <response code="200">Sucess</response>
         /// <response code="401">Unauthorized Access</response> 
@@ -151,7 +157,7 @@ namespace ToggleAPI.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     POST api/User/auth
+        ///     PUT api/User/
         ///     
         ///     {
         ///         "firstName": "string",
@@ -163,6 +169,7 @@ namespace ToggleAPI.Controllers
         /// The fiedls username and password are optionals
         /// </remarks>
         /// <param name="id"></param>
+        /// <param name="userDto"></param>
         /// <returns>OK</returns>
         /// <response code="200">Sucess</response>
         /// <response code="400">If the id is null or not found or the username is invalid</response>
@@ -182,14 +189,13 @@ namespace ToggleAPI.Controllers
             }
         }
 
-        // DELETE api/User/{id}
         /// <summary>
         /// Delet a specific user by id.
         /// </summary>
         /// <remarks>
         /// Sample request:
         ///
-        ///     DEL api/User/{id}
+        ///     DELETE api/User/{id}
         ///
         /// </remarks>
         /// <param name="id"></param>
