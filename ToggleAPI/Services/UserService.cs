@@ -30,11 +30,11 @@ namespace ToggleAPI.Services
     {
         private readonly IMapper _mapper;
 
-        private ToogleAPIContext _context;
+        private ToggleAPIContext _context;
         private readonly AppSettings _appSettings;
        
         public UserService(
-            ToogleAPIContext context,
+            ToggleAPIContext context,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
