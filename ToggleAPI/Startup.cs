@@ -37,7 +37,7 @@ namespace ToggleAPI
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
             
             // MySql connection
-            services.AddDbContextPool<ToogleAPIContext>(
+            services.AddDbContextPool<ToggleAPIContext>(
                 options => options.UseMySql(Configuration.GetConnectionString("MysqlConnection"),
                     mySqlOptionsAction =>
                     {
@@ -58,6 +58,9 @@ namespace ToggleAPI
 
             // Configure DI for application services
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IServiceService, ServiceService>();
+            services.AddScoped<IToggleService, ToggleService>();
+
 
             // Configure the AutoMapper
             services.AddAutoMapper();
@@ -174,3 +177,4 @@ namespace ToggleAPI
         }
     }
 }
+
