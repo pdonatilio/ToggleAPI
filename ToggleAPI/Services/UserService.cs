@@ -69,7 +69,7 @@ namespace ToggleAPI.Services
                 _context.SaveChanges();
             }                    
             else
-                throw new Exception();
+                throw new ArgumentException("The fields name and password can't be null and the name need to be never used");
         }
 
         public void Put(int id, UserDto userDto)
@@ -102,7 +102,7 @@ namespace ToggleAPI.Services
                 _context.SaveChanges();
             }
             else
-                throw new Exception();
+                throw new ArgumentException("The user was not find.");
         }
 
         public void Delete(int id)
@@ -139,7 +139,7 @@ namespace ToggleAPI.Services
                     userDto.token = getToken(userDto.Id.ToString());
                 }
                 else
-                    throw new Exception();
+                    throw new ArgumentException("The name and password can't be null.");
             }
             return userDto;
         }
@@ -169,7 +169,7 @@ namespace ToggleAPI.Services
                 }
                 return true;
             } else
-                throw new Exception();
+                throw new ArgumentException("The password are incorrect.");
         }
 
         private string getToken(string userId)
