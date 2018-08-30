@@ -8,7 +8,7 @@ using ToggleAPI.Models;
 
 namespace ToggleAPI.Migrations
 {
-    [DbContext(typeof(ToogleAPIContext))]
+    [DbContext(typeof(ToggleAPIContext))]
     [Migration("20180826221052_ToggleAPI")]
     partial class ToggleAPI
     {
