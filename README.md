@@ -3,6 +3,13 @@ A simple example ASP.NET Core 2.1 Web API with Swagger and MySQL using VS Code a
 
 Hi All, 
 
+The idea is using a toggle structure to define some states to a list of services.
+Basically, we put a toggle a signal (true or false) and inform how the services are under it.
+We can choice all of services o just one or a group.
+You can change the toogle signals and verify how many toggles are linked to a service.
+
+We give some examplest to Xunit Tests, JWT Tokens, Using MYSQL database with Entity Framework, and use Swagger to show the API documentation.
+
 This is a really simple "how to understand" the basic functionalities about ASP.NET Core 2.1 with VS Code and your enviroment.
 Please be my guest to sugestions how to increase this project.
 
