@@ -125,7 +125,7 @@ namespace ToggleAPI.Controllers
         /// <remarks>
         /// Sample request:
         ///
-        ///     PUT api/User/auth
+        ///     POST api/User/auth
         ///     
         ///     {
         ///         "username": "string",
