@@ -79,4 +79,6 @@ Important: include the token with the **Bearer** word ahead like the example if 
 `Bearer eyJhbGciOiJIUzI1N[...]`
 
 Inside the swagger strucutre you will find the API documentation with examples.
-I will put this information on Wikki here on git in a near future.
+~~I will put this information on Wikki here on git in a near future.~~
+Página Wiki criada lá você pode entender melhor sobre as APIs e as suas funcionalidades.
+Acesse: [Toggle WIKKI API Pages](https://github.com/pdonatilio/ToggleAPI/wiki)
